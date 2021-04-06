@@ -13,10 +13,12 @@ tableData.forEach((sighting) => {
 });
 
 // Select the button
-var button = d3.select("#filter-btn");
+var fil_button = d3.select("#filter-btn");
+var clear_button = d3.select("#clear-btn");
 
 // Create event handlers 
-button.on("click", runEnter);
+fil_button.on("click", runEnter);
+clear_button.on("click", clearFilter)
 
 // Complete the event handler function for the form button
 function runEnter() {
@@ -25,18 +27,20 @@ function runEnter() {
     d3.event.preventDefault();
   
     // Select the input element and get the raw HTML node
-    var inputElement = d3.select("#datetime");
-
-    // Get the value property of the input element
-    var inputValue = inputElement.property("value");
-
-    console.log(inputValue);
-    // console.log(people);
-
-    var filteredData = tableData.filter(sighting => sighting.datetime === inputValue);
-
-    console.log(filteredData);
-
+    var datetm = d3.select("#datetime").property("value");
+    var city = d3.select("#city").property("value").toLowerCase();
+    var state = d3.select("#state").property("value").toLowerCase();
+    var country = d3.select("#country").property("value").toLowerCase();
+    var shape = d3.select("#shape").property("value").toLowerCase();
+    
+    // get all data and filter
+    var filteredData = tableData.filter(sighting => 
+        (datetm === "" || sighting.datetime === datetm) && 
+        (city === "" || sighting.city === city) &&        
+        (state === "" || sighting.state === state) &&
+        (country === "" || sighting.country === country) &&
+        (shape === "" || sighting.shape === shape));
+    
     // Clear the table
     d3.selectAll('tbody tr').remove();
     
@@ -50,4 +54,25 @@ function runEnter() {
         });
     });
 
+};
+
+function clearFilter() {
+    d3.select("#datetime").property("value", "");
+    d3.select("#city").property("value", "");
+    d3.select("#state").property("value", "");
+    d3.select("#country").property("value", "");
+    d3.select("#shape").property("value", "");
+
+    d3.selectAll('tbody tr').remove();
+
+    var tbody = d3.select("tbody");
+    tableData.forEach((sighting) => {
+      var row = tbody.append("tr");
+      var row = tbody.append("tr");
+      Object.entries(sighting).forEach(([key, value]) => {
+        var cell = row.append("td");
+        cell.text(value);
+      });
+    });
+    
 };
